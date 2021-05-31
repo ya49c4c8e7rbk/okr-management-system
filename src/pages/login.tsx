@@ -14,7 +14,7 @@ const Login: NextPage = () => {
     })
   }, [])
 
-  const logIn = async (e) => {
+  const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       await auth.signInWithEmailAndPassword(email, password)

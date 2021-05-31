@@ -1,8 +1,10 @@
 import { NextPage } from 'next'
+import firebase from 'firebase'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { auth, db } from '~/utils/firebase'
 import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
+import { IOKR } from '~/interfaces'
 
 const Home: NextPage = (props: any) => {
   const router = useRouter()
@@ -22,9 +24,9 @@ const Home: NextPage = (props: any) => {
         <button onClick={logOut}>Logout</button>
         <table>
           <tbody>
-            {props.okrs.map((okr) => (
+            {props.okrs.map((okr: IOKR) => (
               <tr key={okr.id}>
-                <td>{okr.owner.name}</td>
+                <td>{okr.owner?.name}</td>
                 <td>{okr.objective}</td>
                 <td>
                   <Link
@@ -46,32 +48,33 @@ const Home: NextPage = (props: any) => {
 }
 
 Home.getInitialProps = async () => {
-  const result = await new Promise((resolve, reject) => {
+  const okrs: IOKR[] = await new Promise((resolve, reject) => {
     db.collection('okrs')
       .get()
       .then(async (snapshot) => {
-        const data = []
+        const snapshots: firebase.firestore.DocumentData[] = []
         snapshot.forEach((doc) => {
-          data.push(
-            Object.assign(
-              {
-                id: doc.id,
-              },
-              doc.data(),
-            ),
-          )
+          snapshots.push(doc.data())
         })
-        for (const i in data) {
-          data[i].owner = { name: (await data[i].owner.get()).get('name') }
+        const okrs: IOKR[] = []
+        for (const i in snapshots) {
+          okrs.push({
+            id: snapshots[i].id,
+            objective: snapshots[i].objective,
+            key_results: snapshots[i].key_results,
+            owner: {
+              name: (await snapshots[i].owner.get()).get('name'),
+            },
+          })
         }
-        resolve(data)
+        resolve(okrs)
       })
       .catch((error) => {
         console.error(error)
         reject([])
       })
   })
-  return { okrs: result }
+  return { okrs }
 }
 
 export default Home

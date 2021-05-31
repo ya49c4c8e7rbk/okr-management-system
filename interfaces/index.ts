@@ -1,10 +1,30 @@
-// You can include shared interfaces/types in a separate file
-// and then use them in any component by importing them. For
-// example, to import the interface below do:
-//
-// import { User } from 'path/to/interfaces';
+import firebase from 'firebase'
 
 export type User = {
   id: number
   name: string
+}
+
+export interface IOKRs {
+  [key: string]: IOKR
+}
+
+export interface IOKR {
+  id: string
+  objective?: string
+  key_results?: IKeyResult[]
+  owner?: {
+    name?: string
+  }
+}
+
+export interface IOKRTmp {
+  id: string
+  objective?: string
+  key_results?: IKeyResult[]
+  owner: firebase.firestore.DocumentReference
+}
+
+export interface IKeyResult {
+  key_result: string
 }
