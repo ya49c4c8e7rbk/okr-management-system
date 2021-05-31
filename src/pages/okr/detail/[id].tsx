@@ -4,15 +4,19 @@ import { db } from '~/utils/firebase'
 import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
 import { IKeyResult, IOKR } from '~/interfaces'
 
-const Detail: NextPage = (props: any) => {
+type Props = {
+  okr: IOKR
+}
+
+const Detail: NextPage<Props> = (props) => {
   return (
     <div>
       <ProtectRoute>
-        <div>{props.okr.owner.name}</div>
+        <div>{props.okr.owner?.name}</div>
         <div>{props.okr.objective}</div>
         <div>
           <ul>
-            {props.okr.key_results.map((data: IKeyResult, i: string) => (
+            {props.okr.key_results?.map((data: IKeyResult, i: number) => (
               <li key={i}>{data.key_result}</li>
             ))}
           </ul>
