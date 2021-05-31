@@ -1,10 +1,3 @@
-import firebase from 'firebase'
-
-export type User = {
-  id: number
-  name: string
-}
-
 export type IOKRs = {
   [key: string]: IOKR
 }
