@@ -59,16 +59,17 @@ Home.getInitialProps = async () => {
       .then(async (snapshot) => {
         const snapshots: firebase.firestore.DocumentData[] = []
         snapshot.forEach((doc) => {
-          snapshots.push(doc.data())
+          snapshots.push(doc)
         })
         const okrs: IOKR[] = []
         for (const i in snapshots) {
+          const data = snapshots[i].data()
           okrs.push({
             id: snapshots[i].id,
-            objective: snapshots[i].objective,
-            key_results: snapshots[i].key_results,
+            objective: data.objective,
+            key_results: data.key_results,
             owner: {
-              name: (await snapshots[i].owner.get()).get('name'),
+              name: (await data.owner.get()).get('name'),
             },
           })
         }
