@@ -1,18 +1,11 @@
-import { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { auth, db } from '../../utils/firebase'
+import { auth, db } from '~/utils/firebase'
+import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
 
 const Home: NextPage = (props: any) => {
   const router = useRouter()
-  const [currentUser, setCurrentUser] = useState<null | object>(null)
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      user ? setCurrentUser(user) : router.push('/login')
-    })
-  }, [])
 
   const logOut = async () => {
     try {
@@ -25,27 +18,29 @@ const Home: NextPage = (props: any) => {
 
   return (
     <div>
-      <button onClick={logOut}>Logout</button>
-      <table>
-        <tbody>
-          {props.okrs.map((okr) => (
-            <tr key={okr.id}>
-              <td>{okr.owner.name}</td>
-              <td>{okr.objective}</td>
-              <td>
-                <Link
-                  href={{
-                    pathname: '/okr/detail',
-                    query: { id: okr.id },
-                  }}
-                >
-                  詳細
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ProtectRoute>
+        <button onClick={logOut}>Logout</button>
+        <table>
+          <tbody>
+            {props.okrs.map((okr) => (
+              <tr key={okr.id}>
+                <td>{okr.owner.name}</td>
+                <td>{okr.objective}</td>
+                <td>
+                  <Link
+                    href={{
+                      pathname: '/okr/detail',
+                      query: { id: okr.id },
+                    }}
+                  >
+                    詳細
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </ProtectRoute>
     </div>
   )
 }

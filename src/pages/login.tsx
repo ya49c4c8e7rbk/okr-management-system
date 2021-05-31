@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { auth } from '../../utils/firebase'
+import { auth } from '~/utils/firebase'
 
 const Login: NextPage = () => {
   const router = useRouter()

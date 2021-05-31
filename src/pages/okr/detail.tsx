@@ -1,19 +1,21 @@
 import { NextPage } from 'next'
-import { auth, db } from '../../../utils/firebase'
+import { db } from '~/utils/firebase'
+import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
 
 const Detail: NextPage = (props: any) => {
-  console.log(props.okr.key_results)
   return (
     <div>
-      <div>{props.okr.owner.name}</div>
-      <div>{props.okr.objective}</div>
-      <div>
-        <ul>
-          {props.okr.key_results.map((data, i) => (
-            <li key={i}>{data.key_result}</li>
-          ))}
-        </ul>
-      </div>
+      <ProtectRoute>
+        <div>{props.okr.owner.name}</div>
+        <div>{props.okr.objective}</div>
+        <div>
+          <ul>
+            {props.okr.key_results.map((data, i) => (
+              <li key={i}>{data.key_result}</li>
+            ))}
+          </ul>
+        </div>
+      </ProtectRoute>
     </div>
   )
 }
