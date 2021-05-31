@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import { useCallback } from 'react'
 import firebase from 'firebase'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -6,17 +7,21 @@ import { auth, db } from '~/utils/firebase'
 import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
 import { IOKR } from '~/interfaces'
 
-const Home: NextPage = (props: any) => {
+type Props = {
+  okrs: IOKR[]
+}
+
+const Home: NextPage<Props> = (props) => {
   const router = useRouter()
 
-  const logOut = async () => {
+  const logOut = useCallback(async () => {
     try {
       await auth.signOut()
       router.push('/login')
     } catch (error) {
       alert(error.message)
     }
-  }
+  }, [router])
 
   return (
     <div>
@@ -31,7 +36,7 @@ const Home: NextPage = (props: any) => {
                 <td>
                   <Link
                     href={{
-                      pathname: '/okr/detail',
+                      pathname: '/okr/detail/[id]',
                       query: { id: okr.id },
                     }}
                   >

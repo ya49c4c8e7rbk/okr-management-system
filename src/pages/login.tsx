@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { auth } from '~/utils/firebase'
 
 const Login: NextPage = () => {
   const router = useRouter()
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       user && router.push('/')
     })
-  }, [])
+  }, [router])
 
   const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

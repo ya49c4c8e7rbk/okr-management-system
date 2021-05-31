@@ -5,11 +5,11 @@ export type User = {
   name: string
 }
 
-export interface IOKRs {
+export type IOKRs = {
   [key: string]: IOKR
 }
 
-export interface IOKR {
+export type IOKR = {
   id: string
   objective?: string
   key_results?: IKeyResult[]
@@ -18,13 +18,6 @@ export interface IOKR {
   }
 }
 
-export interface IOKRTmp {
-  id: string
-  objective?: string
-  key_results?: IKeyResult[]
-  owner: firebase.firestore.DocumentReference
-}
-
-export interface IKeyResult {
+export type IKeyResult = {
   key_result: string
 }
