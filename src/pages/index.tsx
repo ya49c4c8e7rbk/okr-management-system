@@ -1,36 +1,68 @@
 import type firebase from 'firebase'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useCallback } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { IOKR } from '~/interfaces'
-import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
-import { auth, db } from '~/utils/firebase'
+import { Layout } from '~/src/components/Layout'
+import { Loading } from '~/src/components/Loading'
+import { useAuth } from '~/src/hooks/useAuth'
+import { useRequireLogin } from '~/src/hooks/useRequireLogin'
+import { db } from '~/utils/firebase'
 
-type Props = {
-  okrs: IOKR[]
-}
+const Home: NextPage = () => {
+  const { logout } = useAuth()
+  const { currentUser, isAuthChecking } = useRequireLogin()
+  const [okrs, setOkrs] = useState<IOKR[]>([])
 
-const Home: NextPage<Props> = (props) => {
-  const router = useRouter()
+  useEffect(() => {
+    db.collection('okrs')
+      .get()
+      .then(async (snapshot) => {
+        const snapshots: firebase.firestore.DocumentData[] = []
+        snapshot.forEach((doc) => {
+          snapshots.push(doc)
+        })
+        const tmpOkrs: IOKR[] = []
+        for (const i in snapshots) {
+          const data = snapshots[i].data()
+          tmpOkrs.push({
+            id: snapshots[i].id,
+            objective: data.objective,
+            key_results: data.key_results,
+            owner: {
+              name: (await data.owner.get()).get('name'),
+            },
+          })
+        }
+        setOkrs(tmpOkrs)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }, [])
 
-  const logOut = useCallback(async () => {
-    try {
-      await auth.signOut()
-      router.push('/login')
-    } catch (error) {
-      alert(error.message)
-    }
-  }, [router])
+  if (isAuthChecking) return <Loading />
+  if (!currentUser) return null
 
   return (
-    <div>
-      <ProtectRoute>
-        <button onClick={logOut}>Logout</button>
-        <table>
-          <tbody>
-            {props.okrs.map((okr: IOKR) => (
+    <Layout>
+      <button onClick={logout}>Logout</button>
+
+      <h1>Home</h1>
+      <hr />
+
+      <h2>ユーザー情報</h2>
+      <p>uid: {currentUser.uid}</p>
+      <p>name: {currentUser.name}</p>
+      <p>email: {currentUser.email}</p>
+      <hr />
+
+      <h2>OKR</h2>
+      <table>
+        <tbody>
+          {okrs.length ? (
+            okrs.map((okr) => (
               <tr key={okr.id}>
                 <td>{okr.owner?.name}</td>
                 <td>{okr.objective}</td>
@@ -45,43 +77,16 @@ const Home: NextPage<Props> = (props) => {
                   </Link>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </ProtectRoute>
-    </div>
+            ))
+          ) : (
+            <tr>
+              <td>OKRがありません</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </Layout>
   )
-}
-
-Home.getInitialProps = async () => {
-  const okrs: IOKR[] = await new Promise((resolve, reject) => {
-    db.collection('okrs')
-      .get()
-      .then(async (snapshot) => {
-        const snapshots: firebase.firestore.DocumentData[] = []
-        snapshot.forEach((doc) => {
-          snapshots.push(doc)
-        })
-        const okrs: IOKR[] = []
-        for (const i in snapshots) {
-          const data = snapshots[i].data()
-          okrs.push({
-            id: snapshots[i].id,
-            objective: data.objective,
-            key_results: data.key_results,
-            owner: {
-              name: (await data.owner.get()).get('name'),
-            },
-          })
-        }
-        resolve(okrs)
-      })
-      .catch((error) => {
-        console.error(error)
-        reject([])
-      })
-  })
-  return { okrs }
 }
 
 export default Home

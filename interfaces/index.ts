@@ -1,3 +1,9 @@
+export type User = {
+  uid: string
+  name: string | null
+  email: string
+}
+
 export type IOKRs = {
   [key: string]: IOKR
 }
