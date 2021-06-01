@@ -1,8 +1,9 @@
-import { NextPage } from 'next'
-import firebase from 'firebase'
-import { db } from '~/utils/firebase'
+import type firebase from 'firebase'
+import type { NextPage } from 'next'
+
+import type { IKeyResult, IOKR } from '~/interfaces'
 import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
-import { IKeyResult, IOKR } from '~/interfaces'
+import { db } from '~/utils/firebase'
 
 type Props = {
   okr: IOKR
@@ -32,8 +33,7 @@ Detail.getInitialProps = async ({ query: { id } }) => {
       .doc(id as string)
       .get()
       .then(async (snapshot) => {
-        const data: firebase.firestore.DocumentData | undefined =
-          snapshot.data()
+        const data: firebase.firestore.DocumentData | undefined = snapshot.data()
         if (data === undefined) {
           reject({} as IOKR)
           return

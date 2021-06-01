@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
-import firebase from 'firebase'
+import type firebase from 'firebase'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+
 import { auth } from '~/utils/firebase'
 
 export const ProtectRoute: React.FC = ({ children }) => {

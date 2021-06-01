@@ -2,9 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./*"
-      ],
+      "~/*": ["./*"]
     },
     "allowJs": true,
     "alwaysStrict": true,
@@ -25,5 +23,5 @@
     "target": "esnext"
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx"]
 }
