@@ -1,11 +1,12 @@
-import { NextPage } from 'next'
-import { useCallback } from 'react'
-import firebase from 'firebase'
-import { useRouter } from 'next/router'
+import type firebase from 'firebase'
+import type { NextPage } from 'next'
 import Link from 'next/link'
-import { auth, db } from '~/utils/firebase'
+import { useRouter } from 'next/router'
+import { useCallback } from 'react'
+
+import type { IOKR } from '~/interfaces'
 import { ProtectRoute } from '~/src/components/auth/ProtectRoute'
-import { IOKR } from '~/interfaces'
+import { auth, db } from '~/utils/firebase'
 
 type Props = {
   okrs: IOKR[]
