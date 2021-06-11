@@ -2,47 +2,33 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { auth } from '~/utils/firebase'
+import { useAuth } from '~/src/hooks/useAuth'
+import { useCurrentUser } from '~/src/hooks/useCurrentUser'
 
 const Login: NextPage = () => {
-  const router = useRouter()
+  const { currentUser } = useCurrentUser()
+  const { login } = useAuth()
+  const { replace } = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      user && router.push('/')
-    })
-  }, [router])
-
-  const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    try {
-      await auth.signInWithEmailAndPassword(email, password)
-      router.push('/')
-    } catch (err) {
-      alert(err.message)
-    }
-  }
+    if (!currentUser) return
+    replace('/')
+  }, [currentUser, replace])
 
   return (
-    <div className="wrapper">
-      <form className="auth" onSubmit={logIn}>
+    <div>
+      <form onSubmit={login(email, password)}>
         <div>
-          <label htmlFor="email" className="auth-label">
-            Email:{' '}
-          </label>
-          <input id="email" className="auth-input" type="email" onChange={(e) => setEmail(e.target.value)} />
+          <label htmlFor="email">Email: </label>
+          <input id="email" type="email" onChange={(e) => setEmail(e.target.value)} />
         </div>
-        <div className="mt-2">
-          <label htmlFor="password" className="auth-label">
-            Password:{' '}
-          </label>
-          <input id="password" className="auth-input" type="password" onChange={(e) => setPassword(e.target.value)} />
+        <div>
+          <label htmlFor="password">Password: </label>
+          <input id="password" type="password" onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <button className="auth-btn" type="submit">
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
     </div>
   )
